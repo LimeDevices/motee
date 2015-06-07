@@ -15,13 +15,6 @@
 #define MOTEE_ERR_RESTART   4   //can't restart during receivin:
 
 void i2cInit();
-int8_t i2cStart();
-void i2cStop();
-
-int8_t i2cSendAddress(uint8_t address);
-int8_t i2cSendByte(uint8_t byte);
-uint8_t i2cRecvByte();
-
 int8_t moteeSendByte(uint8_t address, uint8_t subaddress, uint8_t byte);
 int8_t moteeRecvByte(uint8_t address, uint8_t subaddress, uint8_t *byte);
 
