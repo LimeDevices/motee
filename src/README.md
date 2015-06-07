@@ -9,6 +9,6 @@ changing backend. Backend must provide 4 functions:
 * `moteeRecvByte`  
     receive byte from device
 * `_delay`
-    wait given number of miliseconds
+    wait 100ms (if desired, can be changed)
 first three functions should be in library called i2c (with
 files i2c.c and i2c.h), last one should be in file utils.h.

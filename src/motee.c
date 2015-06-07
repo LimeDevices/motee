@@ -9,9 +9,6 @@
 #include "utils.h"
 #include "i2c.h"
 
-#define MOTEE_SOFT_STEP    100 //step delay in moteeSoftBlockingSet
-
-
 //global variables
 bool motee_reversed[9], motee_found[9];
 int8_t motee_speed[9], motee_state[9], motee_soft_target[9];
@@ -180,7 +177,7 @@ int8_t moteeSoftBlockingSet(uint8_t id, uint8_t direction, uint8_t speed, uint32
     int8_t diff = (direction == MOTEE_FORWARD ? speed : -1*speed) - motee_speed[id];
 
     for (int32_t i = 0; i < steps; i ++) {
-        _delay(MOTEE_SOFT_STEP);
+        _delay();
         short int ret = moteeChangeSpeed(id, diff/steps);
         if (ret != MOTEE_OK)
             return ret;
