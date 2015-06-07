@@ -4,8 +4,6 @@
 #include <inttypes.h>
 #include <stdbool.h>
 
-#include "i2c.h"
-
 //return values
 #define MOTEE_OK            0   //success
 #define MOTEE_ERR_START     1   //can't start i2c
@@ -55,14 +53,6 @@ int8_t moteeSearch();
 
 //true if device was found during search
 extern bool motee_found[9];
-
-
-
-/****** I2C COMMUNICATION ******/
-
-//i2c low-level communication functions
-int8_t moteeSendByte (uint8_t address, uint8_t subaddress, uint8_t byte);
-int8_t moteeRecvByte (uint8_t address, uint8_t subaddress, uint8_t *byte);
 
 
 

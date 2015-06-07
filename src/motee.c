@@ -7,6 +7,7 @@
 
 //here should be _delay function
 #include "utils.h"
+#include "i2c.h"
 
 #define MOTEE_SOFT_STEP    100 //step delay in moteeSoftBlockingSet
 
