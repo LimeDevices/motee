@@ -32,13 +32,15 @@ static uint8_t adjustSpeed(uint8_t speed) {
 void moteeInit() {
     i2cInit();
     //default values: found (searching isn't mandatory), not reversed
-    for (uint8_t i = 0; i < 9; i ++)
+    uint8_t i;
+    for (i = 0; i < 9; i ++)
         motee_found[i] = true, motee_reversed[i] = false;
 }
 
 int8_t moteeSearch() {
     uint8_t buff, found = 0;
-    for (uint8_t i = 0; i < 9; i ++) {
+    uint8_t i;
+    for (i = 0; i < 9; i ++) {
         if (moteeReadFault(i, &buff) == MOTEE_OK) {
             found ++;
             motee_found[i] = true;
@@ -176,7 +178,8 @@ int8_t moteeSoftBlockingSet(uint8_t id, uint8_t direction, uint8_t speed, uint32
     uint32_t steps=time/100;
     int8_t diff = (direction == MOTEE_FORWARD ? speed : -1*speed) - motee_speed[id];
 
-    for (int32_t i = 0; i < steps; i ++) {
+    int32_t i;
+    for (i = 0; i < steps; i ++) {
         _delay();
         short int ret = moteeChangeSpeed(id, diff/steps);
         if (ret != MOTEE_OK)
@@ -187,7 +190,8 @@ int8_t moteeSoftBlockingSet(uint8_t id, uint8_t direction, uint8_t speed, uint32
 }
 
 int8_t moteeSoftUpdate(uint32_t time) {
-    for (uint8_t i = 0; i < 9; i ++) {
+    uint8_t i;
+    for (i = 0; i < 9; i ++) {
         if (!motee_found[i] || motee_soft_time[i] != 0) 
             continue;
 
