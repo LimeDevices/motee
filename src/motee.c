@@ -173,7 +173,7 @@ int8_t moteeSoftBlockingSet(uint8_t id, uint8_t direction, uint8_t speed, uint32
     
     speed = adjustSpeed(speed);
 
-    uint32_t steps=time/MOTEE_SOFT_STEP;
+    uint32_t steps=time/100;
     int8_t diff = (direction == MOTEE_FORWARD ? speed : -1*speed) - motee_speed[id];
 
     for (int32_t i = 0; i < steps; i ++) {
@@ -182,6 +182,7 @@ int8_t moteeSoftBlockingSet(uint8_t id, uint8_t direction, uint8_t speed, uint32
         if (ret != MOTEE_OK)
             return ret;
     }
+
     return moteeChangeSpeed(id, diff%steps);
 }
 
