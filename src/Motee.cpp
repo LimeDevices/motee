@@ -1,9 +1,7 @@
 #include "Motee.h"
 
-extern "C" {
 #include "motee.h"
 #include "i2c.h"
-}
 
 Motee::Motee(uint8_t id, bool reversed) {
     this->id = id;
