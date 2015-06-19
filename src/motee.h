@@ -34,13 +34,7 @@
 /****** CONSTANTS ******/
 
 //devices addresses, read address is higher by 1
-const uint8_t motee_address[9] =
-    {0xC0,0xC2,0xC4,0xC6,0xC8,0xCA,0xCC,0xCE,0xD0};
-
-//registers' subaddresses
-const uint8_t motee_reg_control = 0x00, motee_reg_fault = 0x01;
-
-
+extern const uint8_t motee_address[9], motee_reg_control, motee_reg_fault;
 
 /****** INITIALIZATION ******/
 

@@ -14,6 +14,14 @@ bool motee_reversed[9], motee_found[9];
 int8_t motee_speed[9], motee_state[9], motee_soft_target[9];
 uint32_t motee_soft_time[9];
 
+//devices addresses, read address is higher by 1
+const uint8_t motee_address[9] =
+    {0xC0,0xC2,0xC4,0xC6,0xC8,0xCA,0xCC,0xCE,0xD0};
+
+//registers' subaddresses
+const uint8_t motee_reg_control = 0x00, motee_reg_fault = 0x01;
+
+
 /****** USEFULL SMALL FUNCTIONS ******/
 
 //adjust speed, so it will be in range <6; 63>
