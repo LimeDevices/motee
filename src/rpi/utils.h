@@ -1,6 +1,10 @@
 #include <unistd.h>
 
+#ifndef BLOCKING_DELAY 
+#define BLOCKING_DELAY 10
+#endif
+
 void _sleep() {
-    //100ms = 100000us
-    usleep(100000);
+    //10ms = 10000us
+    usleep(BLOCKING_DELAY*1000);
 }

@@ -5,6 +5,11 @@
 #error "F_CPU isn't defined for motee.c"
 #endif
 
+//default blocking delay to 10ms
+#ifndef BLOCKING_DELAY
+#define BLOCKING_DELAY 10
+#endif
+
 //here should be _delay function
 #include "utils.h"
 #include "i2c.h"
@@ -43,7 +48,13 @@ void moteeInit() {
     uint8_t i;
     for (i = 0; i < 9; i ++) {
         motee_reversed[i] = false;
-        motee_found[i] = (moteeStandby(i) == MOTEE_OK);
+        motee_found[i] = true;
+
+        if (moteeStandby(i) == MOTEE_OK) {
+            motee_found[i] = true;
+        } else {
+            motee_found[i] = false;
+        }
     }
 }
 
@@ -185,18 +196,25 @@ int8_t moteeSoftBlockingSet(uint8_t id, uint8_t direction, uint8_t speed, uint32
     
     speed = adjustSpeed(speed);
 
-    uint32_t steps=time/100;
-    int8_t diff = (direction == MOTEE_FORWARD ? speed : -1*speed) - motee_speed[id];
+    int32_t steps=time/BLOCKING_DELAY;
+    int8_t diff;
+
+    if (direction == MOTEE_FORWARD)
+        diff = speed - motee_speed[id];
+    else
+        diff = -1*(speed + motee_speed[id]);
+
+    int8_t begin = motee_speed[id];
 
     int32_t i;
     for (i = 0; i < steps; i ++) {
         _delay();
-        short int ret = moteeChangeSpeed(id, diff/steps);
-        if (ret != MOTEE_OK)
-            return ret;
+         int8_t ret = moteeSetSpeedS(id, begin + i*diff/steps);
+         if (ret != MOTEE_OK)
+             return ret;
     }
 
-    return moteeChangeSpeed(id, diff%steps);
+    return moteeSetSpeed(id, direction, speed);
 }
 
 int8_t moteeSoftUpdate(uint32_t time) {

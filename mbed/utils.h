@@ -3,8 +3,12 @@
 
 #include "mbed.h"
 
+#ifndef BLOCKING_DELAY
+#define BLOCKING_DELAY 10
+#endif
+
 void _delay() {
-    wait(0.1);
+    wait(BLOCKING_DELAY/1000.0);
 }
 
 #endif
