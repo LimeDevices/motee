@@ -1,4 +1,4 @@
-#include "motee.h"
+#include "motee-c.h"
 
 //complain if F_CPU isn't defined
 #ifndef F_CPU

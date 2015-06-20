@@ -1,6 +1,6 @@
-#include "Motee.h"
+#include "Motee-cpp.h"
 
-#include "motee.h"
+#include "motee-c.h"
 #include "i2c.h"
 
 Motee::Motee(uint8_t id, bool reversed) {
