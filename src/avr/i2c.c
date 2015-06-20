@@ -14,8 +14,8 @@ void i2cInit() {
 int8_t i2cStart() {
     TWCR = (1<<TWINT)|(1<<TWSTA)|(1<<TWEN);
     while(!(TWCR & (1<<TWINT)));
-    if ((TWSR & 0xf8) != 0x08) 
-        return MOTEE_ERR_START;
+//     if ((TWSR & 0xf8) != 0x08) 
+//         return MOTEE_ERR_START;
     return MOTEE_OK;
 }
 
