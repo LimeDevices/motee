@@ -41,8 +41,10 @@ void moteeInit() {
     i2cInit();
     //default values: found (searching isn't mandatory), not reversed
     uint8_t i;
-    for (i = 0; i < 9; i ++)
-        motee_found[i] = true, motee_reversed[i] = false;
+    for (i = 0; i < 9; i ++) {
+        motee_reversed[i] = false;
+        motee_found[i] = (moteeStandby(i) == MOTEE_OK);
+    }
 }
 
 int8_t moteeSearch() {
