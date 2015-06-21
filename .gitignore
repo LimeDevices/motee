@@ -2,3 +2,5 @@
 *.out
 *.o
 *.zip
+*.bin
+*.hex
