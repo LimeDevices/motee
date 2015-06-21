@@ -10,6 +10,7 @@
 #define MOTEE_ERR_ADDR      2   //can't send slave address
 #define MOTEE_ERR_SEND      3   //can't send byte
 #define MOTEE_ERR_RESTART   4   //can't restart during receivin:
+#define MOTEE_ERR_GETSPEED  128 //error during getting speed (bad id)
 
 //errors caused by wrong arguments
 #define MOTEE_ERR_WID       5   //wrong id (grater than 8, or 
@@ -72,8 +73,11 @@ int8_t moteeSoftBlockingSet(uint8_t id, uint8_t direction, uint8_t speed, uint32
 int8_t moteeSoftUpdate(uint32_t time);
 int8_t moteeSoftSet(uint8_t id, uint8_t direction, uint8_t speed, uint32_t time);
 
+//get current speed, returns 128 on error
+int8_t moteeGetSpeed(uint8_t id);
+
 //true if device is 'reversed' i.e. directions are swapped
-extern bool motee_reversed[9];
+extern bool motee_reversed[9], motee_during_soft[9];
 
 
 

@@ -15,9 +15,9 @@
 #include "i2c.h"
 
 //global variables
-bool motee_reversed[9], motee_found[9];
+bool motee_reversed[9], motee_found[9], motee_during_soft[9];
 int8_t motee_speed[9], motee_state[9], motee_soft_target[9];
-uint32_t motee_soft_time[9];
+int32_t motee_soft_remainder[9], motee_soft_time[9];
 
 //devices addresses, read address is higher by 1
 const uint8_t motee_address[9] =
@@ -100,7 +100,7 @@ int8_t moteeSetSpeed(uint8_t id, uint8_t direction, uint8_t speed) {
     }
 
     //disable soft speed change
-    motee_soft_time[id] = 0;
+    motee_during_soft[id] = false;
 
     //send byte, first two bits stands for direction, last six for speed
     return moteeSendByte(motee_address[id], 
@@ -126,7 +126,8 @@ int8_t moteeStandby(uint8_t id) {
         motee_speed[id] = 0;
     motee_state[id] = MOTEE_STANDBY;
 
-    motee_soft_time[id] = 0;
+    //disable soft speed change
+    motee_during_soft[id] = false;
 
     return moteeSendByte(motee_address[id], 
             motee_reg_control, 
@@ -142,7 +143,7 @@ int8_t moteeBrake(uint8_t id) {
         motee_speed[id] = 0;
     motee_state[id] = MOTEE_BRAKE;
 
-    motee_soft_time[id] = 0;
+    motee_during_soft[id] = false;
 
     return moteeSendByte(motee_address[id], 
             motee_reg_control, 
@@ -218,17 +219,29 @@ int8_t moteeSoftBlockingSet(uint8_t id, uint8_t direction, uint8_t speed, uint32
 }
 
 int8_t moteeSoftUpdate(uint32_t time) {
+    int32_t newremainder;
     uint8_t i;
     for (i = 0; i < 9; i ++) {
-        if (!motee_found[i] || motee_soft_time[i] != 0) 
+        if (!motee_found[i] || !motee_during_soft[i])
             continue;
 
         if (motee_soft_time[i] > time) {
-            moteeChangeSpeed(i, (motee_soft_target[i] - motee_speed[i])*time/motee_soft_time[i]);
+            newremainder = 
+                (motee_soft_remainder[i] + (motee_soft_target[i]-motee_speed[i])*((int32_t)time))
+                %motee_soft_time[i];
+
+            moteeChangeSpeed(i, 
+                    (motee_soft_remainder[i] + (motee_soft_target[i] - motee_speed[i])*((int32_t)time))
+                    /motee_soft_time[i]);
+
+            motee_during_soft[i] = true; //moteeChangeSpeed has set it to false
+
+            motee_soft_remainder[i] = newremainder;
             motee_soft_time[i] -= time;
         } else {
             moteeSetSpeedS(i, motee_soft_target[i]);
             motee_soft_time[i] = 0;
+            motee_during_soft[i] = false;
         }
     }
 }
@@ -240,10 +253,18 @@ int8_t moteeSoftSet(uint8_t id, uint8_t direction, uint8_t speed, uint32_t time)
         return MOTEE_ERR_DIR;
     
     speed = adjustSpeed(speed);
-
     motee_soft_time[id] = time;
+    motee_soft_remainder[id] = 0;
+    motee_during_soft[id] = true;
+
     if (direction == MOTEE_FORWARD)
         motee_soft_target[id] = speed;
     else
         motee_soft_target[id] = -1*speed;
+}
+
+int8_t moteeGetSpeed(uint8_t id) {
+    if (id > 8 || !motee_found[id])
+        return MOTEE_ERR_GETSPEED;
+    return motee_speed[id];
 }
