@@ -50,11 +50,7 @@ void moteeInit() {
         motee_reversed[i] = false;
         motee_found[i] = true;
 
-        if (moteeStandby(i) == MOTEE_OK) {
-            motee_found[i] = true;
-        } else {
-            motee_found[i] = false;
-        }
+        moteeStandby(i);
     }
 }
 

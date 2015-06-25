@@ -14,6 +14,7 @@ int main () {
 
     //loop over all devices and check which was found
     //choose first found
+    moteeSearch();
     int i;
     for (i = 0; i < 9; i ++) {
         if (motee_found[i]) {
