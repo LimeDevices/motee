@@ -10,6 +10,7 @@
 #define MOTEE_ERR_ADDR      2   //can't send slave address
 #define MOTEE_ERR_SEND      3   //can't send byte
 #define MOTEE_ERR_RESTART   4   //can't restart during receivin:
+#define MOTEE_ERR_READ      5   //error during reading from motee
 #define MOTEE_ERR_GETSPEED  128 //error during getting speed (bad id)
 
 //errors caused by wrong arguments

@@ -4,7 +4,7 @@
 #define BLOCKING_DELAY 10
 #endif
 
-void _sleep() {
+void _delay() {
     //10ms = 10000us
     usleep(BLOCKING_DELAY*1000);
 }

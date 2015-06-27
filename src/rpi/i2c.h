@@ -9,11 +9,7 @@
 #define MOTEE_ERR_ADDR      2   //can't send slave address
 #define MOTEE_ERR_SEND      3   //can't send byte
 #define MOTEE_ERR_RESTART   4   //can't restart during receivin:
-
-//target i2c device
-#ifndef I2C_DEV
-#define I2C_DEV "/dev/i2c-0"
-#endif
+#define MOTEE_ERR_READ      5   //error during reading from motee
 
 void i2cInit();
 int8_t moteeSendByte(uint8_t address, uint8_t subaddress, uint8_t byte);

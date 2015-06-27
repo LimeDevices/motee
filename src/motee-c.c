@@ -1,10 +1,5 @@
 #include "motee-c.h"
 
-//complain if F_CPU isn't defined
-#ifndef F_CPU
-#error "F_CPU isn't defined for motee.c"
-#endif
-
 //default blocking delay to 10ms
 #ifndef BLOCKING_DELAY
 #define BLOCKING_DELAY 10
