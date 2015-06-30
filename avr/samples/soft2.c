@@ -1,7 +1,7 @@
 /* non-blocking soft-set example with timer
  */
 
-#include "../motee-c.h"
+#include "../motee.h"
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>

@@ -33,6 +33,9 @@
 #define MOTEE_FAULT_LIMIT   4   //extended current limit
 #define MOTEE_FAULT_CLEAR   7   //clear the fault status
 
+//set i2c speed
+#define F_I2C 100000L
+
 /****** CONSTANTS ******/
 
 //devices addresses, read address is higher by 1

@@ -1,4 +1,4 @@
-#include "Motee-cpp.h"
+#include "Motee.hh"
 
 #include "motee-c.h"
 #include "i2c.h"

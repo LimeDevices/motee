@@ -1,7 +1,7 @@
 /* blocking soft-set example
  */
 
-#include "../motee-c.h"
+#include "../motee.h"
 #include <avr/io.h>
 #include <util/delay.h>
 #include <inttypes.h>

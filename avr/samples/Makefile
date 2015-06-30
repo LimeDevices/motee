@@ -3,7 +3,7 @@
 #and device for avrdude
 
 %.bin: %.c
-	avr-gcc $< ../motee-c.c ../i2c.c -O2 -mmcu=atmega8 -o $(basename $@).bin -D F_CPU=8000000
+	avr-gcc $< ../motee.c -O2 -mmcu=atmega8 -o $(basename $@).bin -D F_CPU=8000000
 
 %.hex: %.bin
 	avr-objcopy -O ihex $(basename $@).bin $(basename $@).hex

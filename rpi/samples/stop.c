@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "../motee-c.h"
+#include "../motee.h"
 
 int main () {
     moteeInit();

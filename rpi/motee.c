@@ -1,13 +1,18 @@
-#include "motee-c.h"
+#include "motee.h"
+#include <linux/i2c-dev.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/ioctl.h>
 
 //default blocking delay to 10ms
 #ifndef BLOCKING_DELAY
 #define BLOCKING_DELAY 10
 #endif
 
-//here should be _delay function
-#include "utils.h"
-#include "i2c.h"
+//target i2c device, i2c-1 by default
+#ifndef I2C_DEV
+#define I2C_DEV "/dev/i2c-1"
+#endif
 
 //global variables
 bool motee_reversed[9], motee_found[9], motee_during_soft[9];
@@ -20,6 +25,43 @@ const uint8_t motee_address[9] =
 
 //registers' subaddresses
 const uint8_t motee_reg_control = 0x00, motee_reg_fault = 0x01;
+
+
+/****** I2C COMMUNICATION ******/
+
+int8_t moteeSendByte(uint8_t address, uint8_t subaddress, uint8_t byte) {
+    int fd;
+
+    if ((fd = open(I2C_DEV, O_RDWR)) < 0)
+        return MOTEE_ERR_START;
+
+    if (ioctl (fd, I2C_SLAVE, address>>1) < 0)
+        return MOTEE_ERR_ADDR;
+
+    if (i2c_smbus_write_byte_data(fd, subaddress, byte) < 0)
+        return MOTEE_ERR_SEND;
+
+    close(fd);
+
+    return MOTEE_OK;
+}
+
+int8_t moteeRecvByte(uint8_t address, uint8_t subaddress, uint8_t *byte) {
+    int fd;
+
+    if ((fd = open(I2C_DEV, O_RDWR)) < 0)
+        return MOTEE_ERR_START;
+
+    if (ioctl (fd, I2C_SLAVE, address>>1) < 0)
+        return MOTEE_ERR_ADDR;
+
+    *byte = i2c_smbus_read_byte_data(fd, subaddress);
+    close(fd);
+
+    if (*byte == 255)
+        return MOTEE_ERR_READ;
+    return MOTEE_OK;
+}
 
 
 /****** USEFULL SMALL FUNCTIONS ******/
@@ -35,10 +77,14 @@ static uint8_t adjustSpeed(uint8_t speed) {
     return speed;
 }
 
+void _delay() {
+    //10ms = 10000us
+    usleep(BLOCKING_DELAY*1000);
+}
+
 /****** MOTEE FUNCTIONS ******/
 
 void moteeInit() {
-    i2cInit();
     //default values: found (searching isn't mandatory), not reversed
     uint8_t i;
     for (i = 0; i < 9; i ++) {

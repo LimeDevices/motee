@@ -1,13 +1,17 @@
-#include "motee-c.h"
+#include "motee.h"
+
+#include <avr/io.h>
+#include <util/delay.h>
+
+//complain if F_CPU isn't defined
+#ifndef F_CPU
+#error "F_CPU isn't defined for motee.c"
+#endif
 
 //default blocking delay to 10ms
 #ifndef BLOCKING_DELAY
 #define BLOCKING_DELAY 10
 #endif
-
-//here should be _delay function
-#include "utils.h"
-#include "i2c.h"
 
 //global variables
 bool motee_reversed[9], motee_found[9], motee_during_soft[9];
@@ -21,6 +25,100 @@ const uint8_t motee_address[9] =
 //registers' subaddresses
 const uint8_t motee_reg_control = 0x00, motee_reg_fault = 0x01;
 
+/****** I2C PRYMITIVES ******/
+void i2cInit() {
+    TWSR = 0;
+    TWBR = (F_CPU/F_I2C - 16)/2;
+}
+
+int8_t i2cStart() {
+    TWCR = (1<<TWINT)|(1<<TWSTA)|(1<<TWEN);
+    while(!(TWCR & (1<<TWINT)));
+    if ((TWSR & 0xf8) != 0x08) 
+        return MOTEE_ERR_START;
+    return MOTEE_OK;
+}
+
+void i2cStop() {
+    TWCR = (1<<TWINT)|(1<<TWEN)|(1<<TWSTO);
+}
+
+int8_t i2cSendAddress(uint8_t address) {
+    TWDR = address;
+    TWCR = (1<<TWINT)|(1<<TWEN);
+    while(!(TWCR & (1<<TWINT)));
+    if ((TWSR & 0xf8) != 0x18)
+        return MOTEE_ERR_ADDR;
+    return MOTEE_OK;
+}
+
+int8_t i2cSendByte(uint8_t byte) {
+    TWDR = byte;
+    TWCR = (1<<TWINT)|(1<<TWEN);
+    while(!(TWCR & (1<<TWINT)));
+    if ((TWSR & 0xf8) != 0x28)
+        return MOTEE_ERR_SEND;
+    return MOTEE_OK;
+}
+
+uint8_t i2cRecvByte() {
+    TWCR = (1<<TWINT)|(1<<TWEN);
+    while(!(TWCR&(1<<TWINT)));
+    uint8_t ret = TWDR;
+
+    return ret;
+}
+
+/****** I2C COMMUNICATION ******/
+int8_t moteeSendByte(uint8_t address, uint8_t subaddress, uint8_t byte) {
+    if (i2cStart() != MOTEE_OK) {
+        i2cStop();
+        return MOTEE_ERR_START;
+    }
+
+    if (i2cSendAddress(address) != MOTEE_OK) {
+        i2cStop();
+        return MOTEE_ERR_ADDR;
+    }
+
+    if (i2cSendByte(subaddress) != MOTEE_OK) {
+        i2cStop();
+        return MOTEE_ERR_SEND;
+    }
+
+    if (i2cSendByte(byte) != MOTEE_OK) {
+        i2cStop();
+        return MOTEE_ERR_SEND;
+    }
+
+    i2cStop();
+    return MOTEE_OK;
+}
+
+int8_t moteeRecvByte(uint8_t address, uint8_t subaddress, uint8_t *byte) {
+    if (i2cStart() != MOTEE_OK) {
+        i2cStop();
+        return MOTEE_ERR_START;
+    }
+
+    if (i2cSendAddress(address) != MOTEE_OK) {
+        i2cStop();
+        return MOTEE_ERR_ADDR;
+    }
+
+    if (i2cSendByte(subaddress) != MOTEE_OK) {
+        i2cStop();
+        return MOTEE_ERR_SEND;
+    }
+
+    i2cStart();
+    i2cSendAddress(address|0x01);
+
+    *byte = i2cRecvByte();
+
+    i2cStop();
+    return MOTEE_OK;
+}
 
 /****** USEFULL SMALL FUNCTIONS ******/
 
@@ -33,6 +131,10 @@ static uint8_t adjustSpeed(uint8_t speed) {
     if (speed > 63)
         return 63;
     return speed;
+}
+
+void _delay() {
+    _delay_ms(BLOCKING_DELAY);
 }
 
 /****** MOTEE FUNCTIONS ******/

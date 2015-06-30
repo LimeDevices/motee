@@ -1,5 +1,5 @@
 %.o: %.c
-	gcc ../i2c.c ../motee-c.c $< -o $@
+	gcc ../motee.c $< -o $@
 
 clean:
 	rm -v *.o
