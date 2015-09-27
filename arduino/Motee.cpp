@@ -1,4 +1,4 @@
-#include "Motee.hh"
+#include "Motee.h"
 
 #include "motee-c.h"
 #include "i2c.h"
